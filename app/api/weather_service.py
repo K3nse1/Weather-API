@@ -1,6 +1,5 @@
 from app.api.mock_data import cities
 from app.api.models import Weather
-import os
 
 def get_city(city:str) -> Weather:
     city = city.strip().lower()
@@ -9,10 +8,10 @@ def get_city(city:str) -> Weather:
             return Weather(**place)
     raise ValueError("City not found")
 
-def get_all_cities():
+def get_all_cities() -> list[Weather]:
     return [Weather(**place) for place in cities]
 
-def post_city(city:str, temperature:int, description:str):
+def post_city(city:str, temperature:int, description:str) -> Weather:
     for place in cities:
         if place["city"].lower() == city.lower():
             raise ValueError("City already exists")
@@ -26,7 +25,7 @@ def post_city(city:str, temperature:int, description:str):
         "description": description
     }
     cities.append(new_city)
-    return {"detail": "The city has been registered successfully!"}
+    return Weather(**new_city)
 
 def put_city(city:str, temperature:int, description:str):
     if temperature < -40 or temperature > 50:
