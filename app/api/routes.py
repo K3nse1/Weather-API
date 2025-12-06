@@ -1,0 +1,46 @@
+from fastapi import APIRouter, Query, HTTPException
+from app.api.models import Weather
+from app.api.weather_service import *
+
+
+router = APIRouter()
+
+@router.get("/")
+def root():
+    return {"message": "Hello, weather API!"}
+
+@router.get("/weather", response_model=Weather)
+async def get_weather(city:str = Query(min_length=1, max_length=50)):
+    try:
+        return get_city(city)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="City not found")
+    
+@router.get("/weather/all", response_model=list[Weather])
+async def get_all_weathers():
+    return get_all_cities()
+
+@router.post("/weather", status_code=201)
+async def post_weather(temperature:int,                       
+                       city:str = Query(min_length=1, max_length=50),
+                       description:str = Query(min_length=2, max_length=50)):
+    try:
+        return post_city(city, temperature, description)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@router.put("/weather")
+async def put_weather(temperature:int,
+                      city:str = Query(min_length=1, max_length=50),
+                      description:str = Query(min_length=1, max_length=50)):
+    try:
+        return put_city(city, temperature, description)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="City not found")
+    
+@router.delete("/weather")
+async def delete_weather(city:str):
+    try:
+        return delete_city(city)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="City not found")
