@@ -21,11 +21,9 @@ async def get_all_weathers():
     return get_all_cities()
 
 @router.post("/weather", status_code=201, response_model=Weather)
-async def post_weather(temperature:int,                       
-                       city:str = Query(min_length=1, max_length=50),
-                       description:str = Query(min_length=2, max_length=50)):
+async def post_weather(city_data:CityCreate):
     try:
-        return post_city(city, temperature, description)
+        return post_city(city_data)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     
