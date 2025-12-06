@@ -27,17 +27,15 @@ async def post_weather(city_data:CityCreate):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     
-@router.put("/weather", status_code=204)
-async def put_weather(temperature:int,
-                      city:str = Query(min_length=1, max_length=50),
-                      description:str = Query(min_length=1, max_length=50)):
+@router.put("/weather", status_code=200, response_model=Weather)
+async def put_weather(city_data:CityCreate):
     try:
-        return put_city(city, temperature, description)
+        return put_city(city_data)
     except KeyError:
         raise HTTPException(status_code=404, detail="City not found")
     
-@router.delete("/weather", status_code=204)
-async def delete_weather(city:str):
+@router.delete("/weather", status_code=200, response_model=MessageResponse)
+async def delete_weather(city:CityDelete):
     try:
         return delete_city(city)
     except KeyError:
